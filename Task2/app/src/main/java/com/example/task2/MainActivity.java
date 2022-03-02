@@ -74,6 +74,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                Integer ip3 = 11;
 //                Integer ip4 = 10;
 
+                if (ip1 < 0 || ip1 > 255) {
+                    break;
+                }
+                if (ip2 < 0 || ip2 > 255) {
+                    break;
+                }
+                if (ip3 < 0 || ip3 > 255) {
+                    break;
+                }
+                if (ip4 < 0 || ip4 > 255) {
+                    break;
+                }
+                if (mask1 < 0 || mask1 > 255) {
+                    break;
+                }
+                if (mask2 < 0 || mask2 > 255) {
+                    break;
+                }
+                if (mask3 < 0 || mask3 > 255) {
+                    break;
+                }
+                if (mask4 < 0 || mask4 > 255) {
+                    break;
+                }
+
                 Integer lengthMask = 0;
                 Integer[] arrayLengthMask = {countMaskLength(mask1), countMaskLength(mask2), countMaskLength(mask3), countMaskLength(mask4)};
                 for (int i = 0; i < 4; i++) {
