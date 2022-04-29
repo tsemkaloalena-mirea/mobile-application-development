@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Task 5</string>
+    <string name="title_article_fragment">Article</string>
+    <string name="title_headlines_fragment">Headlines</string>
+    <string name="title_list_item1">Button 1</string>
+    <string name="title_list_item2">Button 2</string>
+</resources>

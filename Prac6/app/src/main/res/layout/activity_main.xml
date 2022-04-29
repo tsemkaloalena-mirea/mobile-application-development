@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/centerButtonBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save on external"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+
+    <Button
+        android:id="@+id/centerDeleteButtonBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete"
+        android:backgroundTint="#FF0000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/centerButtonBottom"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/leftButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="72dp"
+        android:text="SharedPreferences"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <Button
+        android:id="@+id/centerButtonTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save on device"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/centerButtonBottom" />
+
+
+    <Button
+        android:id="@+id/centerDeleteButtonTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:backgroundTint="#FF0000"
+        android:text="Delete"
+        app:layout_constraintBottom_toBottomOf="@id/centerButtonTop"
+        app:layout_constraintLeft_toRightOf="@id/centerButtonTop"
+        app:layout_constraintTop_toTopOf="@id/centerButtonTop"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/rightButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="72dp"
+        android:text="SQLite"
+        app:layout_constraintHorizontal_bias="0.878"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+
+    <TextView
+        android:id="@+id/left_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/leftButton"
+        app:layout_constraintLeft_toLeftOf="@id/leftButton"
+        app:layout_constraintRight_toRightOf="@id/leftButton"
+        android:text="@string/resumes_count"
+        android:textColor="#FF0099"
+        android:textSize="27dp"
+        android:textStyle="bold" />
+
+
+    <EditText
+        android:id="@+id/center_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/centerButtonTop"
+        app:layout_constraintLeft_toLeftOf="@id/centerButtonTop"
+        app:layout_constraintRight_toRightOf="@id/centerButtonTop"
+        android:hint="@string/bobr"
+        android:textColor="#6AFF00"
+        android:textSize="27dp"
+        android:textStyle="bold" />
+
+
+    <TextView
+        android:id="@+id/right_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/rightButton"
+        app:layout_constraintLeft_toLeftOf="@id/rightButton"
+        app:layout_constraintRight_toRightOf="@id/rightButton"
+        android:text="@string/resumes_count"
+        android:textColor="#00FFFF"
+        android:textSize="27dp"
+        android:textStyle="bold" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
