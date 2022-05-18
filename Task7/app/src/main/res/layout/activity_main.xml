@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/call_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Call" />
+
+        <Button
+            android:id="@+id/map_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Open map" />
+
+        <Button
+            android:id="@+id/web_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Open web page" />
+
+        <Button
+            android:id="@+id/mail_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Send email" />
+
+        <Button
+            android:id="@+id/calendar_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Open calendar" />
+
+        <Button
+            android:id="@+id/pick_contact_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pick contact" />
+
+        <TextView
+            android:id="@+id/text_from_other_app"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No text is sent to this app" />
+
+        <ImageView
+            android:id="@+id/image_from_other_app"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:srcCompat="@android:drawable/ic_menu_gallery" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
