@@ -5,4 +5,14 @@
     <string name="title_flights">Flights</string>
     <string name="title_hotels">Hotels</string>
     <string name="title_guide">Guide</string>
+    <string name="enter_your_name">Enter your name</string>
+    <string name="enter_your_e_mail">Enter your E-mail</string>
+    <string name="user_name">Name</string>
+    <string name="user_e_mail">E-mail</string>
+    <string name="booked_rooms">Booked rooms</string>
+    <string name="departure_date">Departure date</string>
+    <string name="number_of_tickets">Number of tickets</string>
+    <string name="find_flights">Find flights</string>
+    <string name="clear_filters">Clear filters</string>
+    <string name="choose_city_title">Choose the city you want to travel</string>
 </resources>

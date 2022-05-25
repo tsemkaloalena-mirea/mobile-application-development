@@ -1,6 +1,10 @@
 package com.example.travelcompanyapplication;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +20,10 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.example.travelcompanyapplication.db_controller.db_contracts.AccountFlightReaderContract;
+import com.example.travelcompanyapplication.db_controller.db_contracts.AccountHotelReaderContract;
 import com.example.travelcompanyapplication.db_controller.db_contracts.FlightReaderContract;
+import com.example.travelcompanyapplication.db_controller.db_helpers.AccountFlightDBHelper;
 import com.example.travelcompanyapplication.db_controller.db_helpers.FlightDBHelper;
 
 import java.text.SimpleDateFormat;
@@ -25,6 +32,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 
 public class FlightsViewBuilder implements View.OnClickListener {
+    private AccountFlightDBHelper accountFlightDBHelper;
     private FlightDBHelper flightDBHelper;
     private LayoutInflater inflater;
     private ViewGroup container;
@@ -40,8 +48,9 @@ public class FlightsViewBuilder implements View.OnClickListener {
     ArrayList<String> departureCities = new ArrayList<String>();
     ArrayList<String> arrivalCities = new ArrayList<String>();
 
-    public FlightsViewBuilder(FlightDBHelper flightDBHelper) {
+    public FlightsViewBuilder(FlightDBHelper flightDBHelper, AccountFlightDBHelper accountFlightDBHelper) {
         this.flightDBHelper = flightDBHelper;
+        this.accountFlightDBHelper = accountFlightDBHelper;
     }
 
     public View changeView() {
@@ -82,15 +91,25 @@ public class FlightsViewBuilder implements View.OnClickListener {
         ArrayList<ArrayList<String>> data = flightDBHelper.getRecords(selection, selectionArgs);
 
         for (ArrayList<String> row : data) {
-            TableLayout tableLayout = createTable(row);
-            if (!update) {
-                departureCities.add(row.get(1));
-                arrivalCities.add(row.get(2));
-            }
+            TableLayout tableLayout = createTableInfo(view, row);
+
+            Button ticketBuyButton = new Button(view.getContext());
+            TableLayout.LayoutParams ticketBuyButtonLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
+            ticketBuyButtonLayoutParams.setMargins(0, 20, 0, 30);
+            ticketBuyButton.setLayoutParams(ticketBuyButtonLayoutParams);
+            ticketBuyButton.setText("Buy ticket");
+            ticketBuyButton.setId(Integer.parseInt(row.get(0)) * 10000 + 9);
+            ticketBuyButton.setOnClickListener(buyTicket(row.get(0)));
+            tableLayout.addView(ticketBuyButton);
 
             View tableDivider = new View(view.getContext());
             tableDivider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2));
             tableDivider.setBackgroundColor(view.getResources().getColor(R.color.table_divider));
+
+            if (!update) {
+                departureCities.add(row.get(1));
+                arrivalCities.add(row.get(2));
+            }
 
             layout.addView(tableLayout);
             layout.addView(tableDivider);
@@ -106,7 +125,7 @@ public class FlightsViewBuilder implements View.OnClickListener {
         return view;
     }
 
-    private TableLayout createTable(ArrayList<String> row) {
+    public static TableLayout createTableInfo(View view, ArrayList<String> row) {
         TableLayout tableLayout = new TableLayout(view.getContext());
         LinearLayout.LayoutParams tableLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         tableLayoutParams.setMargins(0, 20, 0, 20);
@@ -116,9 +135,9 @@ public class FlightsViewBuilder implements View.OnClickListener {
         TableRow dateRow = new TableRow(view.getContext());
         dateRow.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT));
         TableRow.LayoutParams departureDateLayoutParams = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1);
-        TextView departureDateView = createTableColumn(departureDateLayoutParams, row.get(3).split(" ")[0], 16, Integer.parseInt(row.get(0)) * 10000 + 1);
+        TextView departureDateView = createTableColumn(view, departureDateLayoutParams, row.get(3).split(" ")[0], 18, Integer.parseInt(row.get(0)) * 10000 + 1);
         TableRow.LayoutParams arrivalDateLayoutParams = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1);
-        TextView arrivalDateView = createTableColumn(arrivalDateLayoutParams, row.get(4).split(" ")[0], 16, Integer.parseInt(row.get(0)) * 10000 + 2);
+        TextView arrivalDateView = createTableColumn(view, arrivalDateLayoutParams, row.get(4).split(" ")[0], 18, Integer.parseInt(row.get(0)) * 10000 + 2);
         dateRow.addView(departureDateView);
         dateRow.addView(arrivalDateView);
         tableLayout.addView(dateRow);
@@ -126,9 +145,9 @@ public class FlightsViewBuilder implements View.OnClickListener {
         TableRow timeRow = new TableRow(view.getContext());
         timeRow.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT));
         TableRow.LayoutParams departureTimeLayoutParams = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1);
-        TextView departureTimeView = createTableColumn(departureTimeLayoutParams, row.get(3).split(" ")[1], 34, Integer.parseInt(row.get(0)) * 10000 + 3);
+        TextView departureTimeView = createTableColumn(view, departureTimeLayoutParams, row.get(3).split(" ")[1], 34, Integer.parseInt(row.get(0)) * 10000 + 3);
         TableRow.LayoutParams arrivalTimeLayoutParams = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1);
-        TextView arrivalTimeView = createTableColumn(arrivalTimeLayoutParams, row.get(4).split(" ")[1], 34, Integer.parseInt(row.get(0)) * 10000 + 4);
+        TextView arrivalTimeView = createTableColumn(view, arrivalTimeLayoutParams, row.get(4).split(" ")[1], 34, Integer.parseInt(row.get(0)) * 10000 + 4);
         timeRow.addView(departureTimeView);
         timeRow.addView(arrivalTimeView);
         tableLayout.addView(timeRow);
@@ -138,9 +157,9 @@ public class FlightsViewBuilder implements View.OnClickListener {
         cityRowLayoutParams.setMargins(0, 20, 0, 0);
         cityRow.setLayoutParams(cityRowLayoutParams);
         TableRow.LayoutParams departureCityLayoutParams = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1);
-        TextView departureCityView = createTableColumn(departureCityLayoutParams, row.get(1), 16, Integer.parseInt(row.get(0)) * 10000 + 5);
+        TextView departureCityView = createTableColumn(view, departureCityLayoutParams, row.get(1), 18, Integer.parseInt(row.get(0)) * 10000 + 5);
         TableRow.LayoutParams arrivalCityLayoutParams = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1);
-        TextView arrivalCityView = createTableColumn(arrivalCityLayoutParams, row.get(2), 16, Integer.parseInt(row.get(0)) * 10000 + 6);
+        TextView arrivalCityView = createTableColumn(view, arrivalCityLayoutParams, row.get(2), 18, Integer.parseInt(row.get(0)) * 10000 + 6);
         cityRow.addView(departureCityView);
         cityRow.addView(arrivalCityView);
         tableLayout.addView(cityRow);
@@ -150,7 +169,7 @@ public class FlightsViewBuilder implements View.OnClickListener {
         costRowLayoutParams.setMargins(0, 40, 0, 0);
         costRow.setLayoutParams(costRowLayoutParams);
         TableRow.LayoutParams costLayoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
-        TextView costView = createTableColumn(costLayoutParams, row.get(6) + " ₽", 28, Integer.parseInt(row.get(0)) * 10000 + 7);
+        TextView costView = createTableColumn(view, costLayoutParams, Integer.valueOf(row.get(6).replace(" ", "")) / 60 + " $", 28, Integer.parseInt(row.get(0)) * 10000 + 7);
         costRow.addView(costView);
         tableLayout.addView(costRow);
 
@@ -159,23 +178,14 @@ public class FlightsViewBuilder implements View.OnClickListener {
         airlineRowLayoutParams.setMargins(0, 20, 0, 0);
         airlineRow.setLayoutParams(airlineRowLayoutParams);
         TableRow.LayoutParams airlineLayoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
-        TextView airlineView = createTableColumn(airlineLayoutParams, row.get(5), 16, Integer.parseInt(row.get(0)) * 10000 + 8);
+        TextView airlineView = createTableColumn(view, airlineLayoutParams, row.get(5), 18, Integer.parseInt(row.get(0)) * 10000 + 8);
         airlineRow.addView(airlineView);
         tableLayout.addView(airlineRow);
-
-        Button ticketBuyButton = new Button(view.getContext());
-        TableLayout.LayoutParams ticketBuyButtonLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
-        ticketBuyButtonLayoutParams.setMargins(0, 20, 0, 30);
-        ticketBuyButton.setLayoutParams(ticketBuyButtonLayoutParams);
-        ticketBuyButton.setText("Buy ticket");
-        ticketBuyButton.setId(Integer.parseInt(row.get(0)) * 10000 + 9);
-        ticketBuyButton.setOnClickListener(buyTicket(row.get(0)));
-        tableLayout.addView(ticketBuyButton);
 
         return tableLayout;
     }
 
-    private TextView createTableColumn(TableRow.LayoutParams layoutParams, String text, Integer textSize, Integer id) {
+    public static TextView createTableColumn(View view, TableRow.LayoutParams layoutParams, String text, Integer textSize, Integer id) {
         TextView textView = new TextView(view.getContext());
         textView.setLayoutParams(layoutParams);
         textView.setText(text);
@@ -200,6 +210,10 @@ public class FlightsViewBuilder implements View.OnClickListener {
         numberOfTicketsBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+                if (numberOfTicketsBar.getProgress() == 0) {
+                    numberOfTicketsBar.setProgress(1);
+                    progress = 1;
+                }
                 numberOfTicketsTextView.setText("Number of tickets: " + progress);
             }
 
@@ -238,9 +252,17 @@ public class FlightsViewBuilder implements View.OnClickListener {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<ArrayList<String>> data = flightDBHelper.getRecords(FlightReaderContract.FlightEntry._ID + "=?", new String[] {ticketId});
                 Integer numberOfTickets = numberOfTicketsBar.getProgress();
-//                TODO запись в личный кабинет
+
+                SQLiteDatabase database = accountFlightDBHelper.getWritableDatabase();
+                ContentValues values = new ContentValues();
+                values.put(AccountFlightReaderContract.FlightEntry.FLIGHT_ID, ticketId);
+                values.put(AccountFlightReaderContract.FlightEntry.TICKETS_NUMBER, numberOfTickets);
+
+                long newRowId = database.insert(
+                        AccountFlightReaderContract.FlightEntry.TABLE_NAME,
+                        null,
+                        values);
             }
         };
     }

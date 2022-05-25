@@ -25,7 +25,7 @@ public class HotelsFragment extends Fragment {
 
         HotelDBHelper hotelDBHelper = new HotelDBHelper(getContext());
         AccountHotelDBHelper accountHotelDBHelper = new AccountHotelDBHelper(getContext());
-        HotelsViewBuilder hotelsViewBuilder = new HotelsViewBuilder(hotelDBHelper);
+        HotelsViewBuilder hotelsViewBuilder = new HotelsViewBuilder(hotelDBHelper, accountHotelDBHelper);
         view = hotelsViewBuilder.createView(inflater, container, null, null, false);
         return view;
     }

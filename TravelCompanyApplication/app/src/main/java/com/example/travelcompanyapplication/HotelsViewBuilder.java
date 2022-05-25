@@ -1,7 +1,11 @@
 package com.example.travelcompanyapplication;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -20,6 +24,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.example.travelcompanyapplication.db_controller.db_contracts.AccountHotelReaderContract;
+import com.example.travelcompanyapplication.db_controller.db_helpers.AccountHotelDBHelper;
 import com.example.travelcompanyapplication.db_controller.db_helpers.HotelDBHelper;
 import com.example.travelcompanyapplication.db_controller.db_contracts.HotelReaderContract;
 import com.example.travelcompanyapplication.ui.DownloadImageFromInternet;
@@ -29,13 +35,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class HotelsViewBuilder implements View.OnClickListener {
-//    private AccountHotelDBHelper accountHotelDBHelper;
+    private AccountHotelDBHelper accountHotelDBHelper;
     private HotelDBHelper hotelDBHelper;
     private LayoutInflater inflater;
     private ViewGroup container;
     private View view;
     private LinearLayout layout;
-    ArrayList<String> cities = new ArrayList<String>();
+    private ArrayList<String> cities = new ArrayList<String>();
     private Spinner cityDropdown;
     private EditText departureDateEditText;
     private EditText arrivalDateEditText;
@@ -50,31 +56,17 @@ public class HotelsViewBuilder implements View.OnClickListener {
     private Button findHotelsButton;
     private Button clearFiltersButton;
 
-//    public HotelsViewBuilder(HotelDBHelper hotelDBHelper, AccountHotelDBHelper accountHotelDBHelper) {
-//        this.hotelDBHelper = hotelDBHelper;
-//        this.accountHotelDBHelper = accountHotelDBHelper;
-//    }
-
-    public HotelsViewBuilder(HotelDBHelper hotelDBHelper) {
+    public HotelsViewBuilder(HotelDBHelper hotelDBHelper, AccountHotelDBHelper accountHotelDBHelper) {
         this.hotelDBHelper = hotelDBHelper;
+        this.accountHotelDBHelper = accountHotelDBHelper;
     }
+
+//    public HotelsViewBuilder(HotelDBHelper hotelDBHelper) {
+//        this.hotelDBHelper = hotelDBHelper;
+//    }
 
     public View changeView() {
         String city = cityDropdown.getSelectedItem().toString();
-        String departureDate = departureDateEditText.getText().toString();
-        String arrivalDate = arrivalDateEditText.getText().toString();
-        Integer numberOfAdults;
-        if ("".equals(adultsNumberEditText.getText().toString())) {
-            numberOfAdults = 2;
-        } else {
-            numberOfAdults = Integer.parseInt(adultsNumberEditText.getText().toString());
-        }
-        Integer numberOfKids;
-        if ("".equals(kidsNumberEditText.getText().toString())) {
-            numberOfKids = 0;
-        } else {
-            numberOfKids = Integer.parseInt(kidsNumberEditText.getText().toString());
-        }
 
         ArrayList<String> selection = new ArrayList<>();
         ArrayList<String> selectionStars = new ArrayList<>();
@@ -165,12 +157,12 @@ public class HotelsViewBuilder implements View.OnClickListener {
         hotelNameRowLayoutParams.setMargins(0, 50, 0, 20);
         hotelNameRow.setLayoutParams(hotelNameRowLayoutParams);
         TableRow.LayoutParams hotelNameLayoutParams = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1);
-        TextView hotelNameView = createTableColumn(view, hotelNameLayoutParams, row.get(2), 20, Integer.parseInt(row.get(0)) * 10000 + 1);
+        TextView hotelNameView = createTableColumn(view, hotelNameLayoutParams, row.get(2), 24, Integer.parseInt(row.get(0)) * 10000 + 1);
         hotelNameRow.addView(hotelNameView);
         tableLayout.addView(hotelNameRow);
 
         TableRow hotelStarBarRow = new TableRow(view.getContext());
-        TableLayout.LayoutParams hotelStarBarRowLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT, 1);
+        TableLayout.LayoutParams hotelStarBarRowLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
         hotelStarBarRow.setLayoutParams(hotelStarBarRowLayoutParams);
         TableRow.LayoutParams hotelStarBarLayoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT, 0);
         RatingBar hotelStarBar = new RatingBar(view.getContext(), null, android.R.attr.ratingBarStyleSmall);
@@ -186,7 +178,7 @@ public class HotelsViewBuilder implements View.OnClickListener {
         TableLayout.LayoutParams cityRowLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT);
         cityRow.setLayoutParams(cityRowLayoutParams);
         TableRow.LayoutParams cityLayoutParams = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1);
-        TextView cityView = createTableColumn(view, cityLayoutParams, row.get(1), 16, Integer.parseInt(row.get(0)) * 10000 + 3);
+        TextView cityView = createTableColumn(view, cityLayoutParams, row.get(1), 18, Integer.parseInt(row.get(0)) * 10000 + 3);
         TableRow.LayoutParams mapLinkLayoutParams = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1);
         Button linkMapButton = new Button(view.getContext());
         linkMapButton.setLayoutParams(mapLinkLayoutParams);
@@ -205,19 +197,23 @@ public class HotelsViewBuilder implements View.OnClickListener {
         new DownloadImageFromInternet(hotelImageView, view.getContext()).execute(row.get(6));
         tableLayout.addView(hotelImageView);
 
-        TableRow costRow = new TableRow(view.getContext());
-        TableLayout.LayoutParams costRowLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT);
-        costRow.setLayoutParams(costRowLayoutParams);
         TableRow.LayoutParams costLayoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
-        TextView costView = createTableColumn(view, costLayoutParams, row.get(4) + " $", 28, Integer.parseInt(row.get(0)) * 10000 + 6);
-        costRow.addView(costView);
-        tableLayout.addView(costRow);
-
+        TextView costView = createTableColumn(view, costLayoutParams, row.get(4) + " $ per night", 24, Integer.parseInt(row.get(0)) * 10000 + 6);
+        tableLayout.addView(costView);
 
         return tableLayout;
     }
 
     public static TextView createTableColumn(View view, TableRow.LayoutParams layoutParams, String text, Integer textSize, Integer id) {
+        TextView textView = new TextView(view.getContext());
+        textView.setLayoutParams(layoutParams);
+        textView.setText(text);
+        textView.setTextSize(textSize);
+        textView.setId(id);
+        return textView;
+    }
+
+    public static TextView createTableColumn(View view, TableLayout.LayoutParams layoutParams, String text, Integer textSize, Integer id) {
         TextView textView = new TextView(view.getContext());
         textView.setLayoutParams(layoutParams);
         textView.setText(text);
@@ -322,13 +318,68 @@ public class HotelsViewBuilder implements View.OnClickListener {
     }
 
     private View.OnClickListener bookRoom(String hotelId) {
+        Boolean writingAllowed = false;
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                ArrayList<ArrayList<String>> data = flightDBHelper.getRecords(FlightReaderContract.FlightEntry._ID + "=?", new String[] {ticketId});
-//                TODO запись в личный кабинет
+                String departureDate = departureDateEditText.getText().toString();
+                String arrivalDate = arrivalDateEditText.getText().toString();
+
+                if ("".equals(departureDate)) {
+                    createAlert("Departure date is not set");
+                    return;
+                }
+                if ("".equals(arrivalDate)) {
+                    createAlert("Arrival date is not set");
+                    return;
+                }
+                if ("0".equals(adultsNumberEditText.getText().toString())) {
+                    createAlert("Number of adults can not be 0");
+                    return;
+                }
+
+                Integer numberOfAdults;
+                if ("".equals(adultsNumberEditText.getText().toString())) {
+                    numberOfAdults = 2;
+                } else {
+                    numberOfAdults = Integer.parseInt(adultsNumberEditText.getText().toString());
+                }
+                Integer numberOfKids;
+                if ("".equals(kidsNumberEditText.getText().toString())) {
+                    numberOfKids = 0;
+                } else {
+                    numberOfKids = Integer.parseInt(kidsNumberEditText.getText().toString());
+                }
+
+                SQLiteDatabase database = accountHotelDBHelper.getWritableDatabase();
+                ContentValues values = new ContentValues();
+                values.put(AccountHotelReaderContract.HotelEntry.DEPARTURE_DATE, departureDate);
+                values.put(AccountHotelReaderContract.HotelEntry.ARRIVAL_DATE, arrivalDate);
+                values.put(AccountHotelReaderContract.HotelEntry.HOTEL_ID, hotelId);
+                values.put(AccountHotelReaderContract.HotelEntry.ADULTS_NUMBER, numberOfAdults);
+                values.put(AccountHotelReaderContract.HotelEntry.KIDS_NUMBER, numberOfKids);
+
+                long newRowId = database.insert(
+                        AccountHotelReaderContract.HotelEntry.TABLE_NAME,
+                        null,
+                        values);
             }
         };
+    }
+
+    private void createAlert(String message) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(view.getContext());
+
+        alert.setTitle("Wrong data");
+        alert.setMessage(message);
+
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+            }
+        });
+
+        alert.show();
     }
 
     public static View.OnClickListener openMap(View view, String mapLink) {
@@ -341,5 +392,4 @@ public class HotelsViewBuilder implements View.OnClickListener {
             }
         };
     }
-
 }

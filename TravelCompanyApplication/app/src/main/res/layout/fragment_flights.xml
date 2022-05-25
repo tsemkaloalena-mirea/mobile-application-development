@@ -46,10 +46,10 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:focusable="false"
-                android:hint="Departure date"
+                android:hint="@string/departure_date"
                 android:inputType="date"
                 android:paddingTop="15dp"
-                android:textSize="16sp" />
+                android:textSize="18sp" />
 
         </LinearLayout>
 
@@ -57,8 +57,8 @@
             android:id="@+id/airport_number_of_tickets_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Number of tickets"
-            android:textSize="16sp" />
+            android:text="@string/number_of_tickets"
+            android:textSize="18sp" />
 
         <SeekBar
             android:id="@+id/airport_airport_number_of_tickets_seek_bar"
@@ -76,7 +76,7 @@
             android:layout_marginBottom="10dp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:text="Find flights" />
+            android:text="@string/find_flights" />
 
         <Button
             android:id="@+id/airport_clear_filters_button"
@@ -85,7 +85,7 @@
             android:layout_marginBottom="40dp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:text="Clear filters" />
+            android:text="@string/clear_filters" />
 
         <LinearLayout
             android:id="@+id/flights_container"

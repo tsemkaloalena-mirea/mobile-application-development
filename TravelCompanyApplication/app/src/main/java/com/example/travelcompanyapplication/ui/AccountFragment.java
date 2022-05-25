@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.travelcompanyapplication.AccountViewBuilder;
 import com.example.travelcompanyapplication.databinding.FragmentAccountBinding;
+import com.example.travelcompanyapplication.db_controller.db_helpers.AccountFlightDBHelper;
 import com.example.travelcompanyapplication.db_controller.db_helpers.AccountHotelDBHelper;
 import com.example.travelcompanyapplication.db_controller.db_helpers.FlightDBHelper;
 import com.example.travelcompanyapplication.db_controller.db_helpers.HotelDBHelper;
@@ -23,7 +24,8 @@ public class AccountFragment extends Fragment {
         HotelDBHelper hotelDBHelper = new HotelDBHelper(getContext());
         AccountHotelDBHelper accountHotelDBHelper = new AccountHotelDBHelper(getContext());
         FlightDBHelper flightDBHelper = new FlightDBHelper(getContext());
-        AccountViewBuilder accountViewBuilder = new AccountViewBuilder(hotelDBHelper, accountHotelDBHelper, flightDBHelper);
+        AccountFlightDBHelper accountFlightDBHelper = new AccountFlightDBHelper(getContext());
+        AccountViewBuilder accountViewBuilder = new AccountViewBuilder(hotelDBHelper, accountHotelDBHelper, flightDBHelper, accountFlightDBHelper);
         view = accountViewBuilder.createView(inflater, container, null, null, false);
         return view;
     }
