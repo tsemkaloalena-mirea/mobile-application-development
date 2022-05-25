@@ -19,13 +19,13 @@
             android:orientation="horizontal">
 
             <Spinner
-                android:id="@+id/departure_city_spinner"
+                android:id="@+id/airport_departure_city_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_weight="1" />
 
             <Spinner
-                android:id="@+id/arrival_city_spinner"
+                android:id="@+id/airport_arrival_city_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_weight="1" />
@@ -40,7 +40,7 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/departure_date_text_edit"
+                android:id="@+id/airport_departure_date_text_edit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -51,28 +51,17 @@
                 android:paddingTop="15dp"
                 android:textSize="16sp" />
 
-            <EditText
-                android:id="@+id/arrival_date_text_edit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:focusable="false"
-                android:hint="Arrival date"
-                android:inputType="date"
-                android:paddingTop="15dp"
-                android:textSize="16sp" />
         </LinearLayout>
 
         <TextView
-            android:id="@+id/number_of_tickets_text_view"
+            android:id="@+id/airport_number_of_tickets_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Number of tickets"
             android:textSize="16sp" />
 
         <SeekBar
-            android:id="@+id/number_of_tickets_seek_bar"
+            android:id="@+id/airport_airport_number_of_tickets_seek_bar"
             style="@style/Widget.AppCompat.SeekBar.Discrete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -84,10 +73,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="10dp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             android:text="Find flights" />
+
+        <Button
+            android:id="@+id/airport_clear_filters_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="Clear filters" />
 
         <LinearLayout
             android:id="@+id/flights_container"

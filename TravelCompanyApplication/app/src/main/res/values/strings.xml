@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Travel Company Application</string>
+    <string name="title_home">Home</string>
+    <string name="title_account">Account</string>
+    <string name="title_flights">Flights</string>
+    <string name="title_hotels">Hotels</string>
+    <string name="title_guide">Guide</string>
+</resources>

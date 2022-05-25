@@ -10,5 +10,6 @@ public class HotelReaderContract {
         public static final String MAP_LINK = "map_link";
         public static final String COST = "cost";
         public static final String RATING = "rating";
+        public static final String IMAGE_URL = "image_url";
     }
 }

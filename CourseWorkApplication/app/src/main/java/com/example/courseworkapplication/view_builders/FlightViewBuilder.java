@@ -30,12 +30,12 @@ public class FlightViewBuilder implements View.OnClickListener {
     private LayoutInflater inflater;
     private ViewGroup container;
     private EditText departureDateEditText;
-    private EditText arrivalDateEditText;
     private Spinner departureCityDropdown;
     private Spinner arrivalCityDropdown;
     private TextView numberOfTicketsTextView;
     private SeekBar numberOfTicketsBar;
     private Button findFlightsButton;
+    private Button clearFiltersButton;
     private View view;
     private LinearLayout layout;
     ArrayList<String> departureCities = new ArrayList<String>();
@@ -49,7 +49,6 @@ public class FlightViewBuilder implements View.OnClickListener {
         String departureCity = departureCityDropdown.getSelectedItem().toString();
         String arrivalCity = arrivalCityDropdown.getSelectedItem().toString();
         String departureDate = departureDateEditText.getText().toString();
-        String arrivalDate = arrivalDateEditText.getText().toString();
         Integer numberOfTickets = numberOfTicketsBar.getProgress();
 
         ArrayList<String> selection = new ArrayList<>();
@@ -65,10 +64,6 @@ public class FlightViewBuilder implements View.OnClickListener {
         if (!("".equals(departureDate))) {
             selection.add(FlightReaderContract.FlightEntry.DEPARTURE_DATE + " LIKE ?");
             selectionArgs.add("%" + departureDate + "%");
-        }
-        if (!("".equals(arrivalDate))) {
-            selection.add(FlightReaderContract.FlightEntry.ARRIVAL_DATE + "=?");
-            selectionArgs.add(arrivalDate);
         }
 
         view = createView(inflater, container, String.join(" and ", selection), selectionArgs.toArray(new String[0]), true);
@@ -88,14 +83,14 @@ public class FlightViewBuilder implements View.OnClickListener {
         ArrayList<ArrayList<String>> data = flightDBHelper.getRecords(selection, selectionArgs);
 
         for (ArrayList<String> row : data) {
-            TableLayout tableLayout = createTableItem(row);
+            TableLayout tableLayout = createTable(row);
             if (!update) {
                 departureCities.add(row.get(1));
                 arrivalCities.add(row.get(2));
             }
 
             View tableDivider = new View(view.getContext());
-            tableDivider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1));
+            tableDivider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2));
             tableDivider.setBackgroundColor(view.getResources().getColor(R.color.airport_table_divider));
 
             layout.addView(tableLayout);
@@ -106,11 +101,13 @@ public class FlightViewBuilder implements View.OnClickListener {
         arrivalCities = new ArrayList<>(new HashSet<String>(arrivalCities));
         departureCities.add(0, "Departure city");
         arrivalCities.add(0, "Arrival city");
-        setupMenu();
+        if (!update) {
+            setupMenu();
+        }
         return view;
     }
 
-    private TableLayout createTableItem(ArrayList<String> row) {
+    private TableLayout createTable(ArrayList<String> row) {
         TableLayout tableLayout = new TableLayout(view.getContext());
         LinearLayout.LayoutParams tableLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         tableLayoutParams.setMargins(0, 20, 0, 20);
@@ -139,7 +136,7 @@ public class FlightViewBuilder implements View.OnClickListener {
 
         TableRow cityRow = new TableRow(view.getContext());
         TableLayout.LayoutParams cityRowLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT);
-        cityRowLayoutParams.setMargins(0, 10, 0, 0);
+        cityRowLayoutParams.setMargins(0, 20, 0, 0);
         cityRow.setLayoutParams(cityRowLayoutParams);
         TableRow.LayoutParams departureCityLayoutParams = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1);
         TextView departureCityView = createTableColumn(departureCityLayoutParams, row.get(1), 16, Integer.parseInt(row.get(0)) * 10000 + 5);
@@ -151,7 +148,7 @@ public class FlightViewBuilder implements View.OnClickListener {
 
         TableRow costRow = new TableRow(view.getContext());
         TableLayout.LayoutParams costRowLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT);
-        costRowLayoutParams.setMargins(0, 20, 0, 0);
+        costRowLayoutParams.setMargins(0, 40, 0, 0);
         costRow.setLayoutParams(costRowLayoutParams);
         TableRow.LayoutParams costLayoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
         TextView costView = createTableColumn(costLayoutParams, row.get(6) + " ₽", 28, Integer.parseInt(row.get(0)) * 10000 + 7);
@@ -160,7 +157,7 @@ public class FlightViewBuilder implements View.OnClickListener {
 
         TableRow airlineRow = new TableRow(view.getContext());
         TableLayout.LayoutParams airlineRowLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT);
-        airlineRowLayoutParams.setMargins(0, 10, 0, 0);
+        airlineRowLayoutParams.setMargins(0, 20, 0, 0);
         airlineRow.setLayoutParams(airlineRowLayoutParams);
         TableRow.LayoutParams airlineLayoutParams = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT);
         TextView airlineView = createTableColumn(airlineLayoutParams, row.get(5), 16, Integer.parseInt(row.get(0)) * 10000 + 8);
@@ -169,7 +166,7 @@ public class FlightViewBuilder implements View.OnClickListener {
 
         Button ticketBuyButton = new Button(view.getContext());
         TableLayout.LayoutParams ticketBuyButtonLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
-        ticketBuyButtonLayoutParams.setMargins(0, 20, 0, 0);
+        ticketBuyButtonLayoutParams.setMargins(0, 20, 0, 30);
         ticketBuyButton.setLayoutParams(ticketBuyButtonLayoutParams);
         ticketBuyButton.setText("Buy ticket");
         ticketBuyButton.setId(Integer.parseInt(row.get(0)) * 10000 + 9);
@@ -179,18 +176,7 @@ public class FlightViewBuilder implements View.OnClickListener {
         return tableLayout;
     }
 
-    private View.OnClickListener buyTicket(String ticketId) {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ArrayList<ArrayList<String>> data = flightDBHelper.getRecords(FlightReaderContract.FlightEntry._ID + "=?", new String[] {ticketId});
-                Integer numberOfTickets = numberOfTicketsBar.getProgress();
-//                TODO запись в личный кабинет
-            }
-        };
-    }
-
-    private TextView createTableColumn(TableRow.LayoutParams layoutParams, String text, Integer textSize, Integer id) { //TODO remove view
+    private TextView createTableColumn(TableRow.LayoutParams layoutParams, String text, Integer textSize, Integer id) {
         TextView textView = new TextView(view.getContext());
         textView.setLayoutParams(layoutParams);
         textView.setText(text);
@@ -200,20 +186,18 @@ public class FlightViewBuilder implements View.OnClickListener {
     }
 
     private void setupMenu() {
-        departureCityDropdown = view.findViewById(R.id.departure_city_spinner);
+        departureCityDropdown = view.findViewById(R.id.airport_departure_city_spinner);
         ArrayAdapter<String> departureCityAdapter = createSpinnerAdapter(departureCities.toArray(new String[0]));
         departureCityDropdown.setAdapter(departureCityAdapter);
-        arrivalCityDropdown = view.findViewById(R.id.arrival_city_spinner);
+        arrivalCityDropdown = view.findViewById(R.id.airport_arrival_city_spinner);
         ArrayAdapter<String> arrivalCityAdapter = createSpinnerAdapter(arrivalCities.toArray(new String[0]));
         arrivalCityDropdown.setAdapter(arrivalCityAdapter);
 
-        departureDateEditText = (EditText) view.findViewById(R.id.departure_date_text_edit);
-        arrivalDateEditText = (EditText) view.findViewById(R.id.arrival_date_text_edit);
+        departureDateEditText = (EditText) view.findViewById(R.id.airport_departure_date_text_edit);
         setupDateDialog(departureDateEditText);
-        setupDateDialog(arrivalDateEditText);
 
-        numberOfTicketsTextView = (TextView) view.findViewById(R.id.number_of_tickets_text_view);
-        numberOfTicketsBar = (SeekBar) view.findViewById(R.id.number_of_tickets_seek_bar);
+        numberOfTicketsTextView = (TextView) view.findViewById(R.id.airport_number_of_tickets_text_view);
+        numberOfTicketsBar = (SeekBar) view.findViewById(R.id.airport_airport_number_of_tickets_seek_bar);
         numberOfTicketsBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
@@ -231,17 +215,35 @@ public class FlightViewBuilder implements View.OnClickListener {
 
         findFlightsButton = (Button) view.findViewById(R.id.find_flights_button);
         findFlightsButton.setOnClickListener(this);
+        clearFiltersButton = (Button) view.findViewById(R.id.airport_clear_filters_button);
+        clearFiltersButton.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.find_flights_button:
-
                 this.view = changeView();
                 break;
+            case R.id.airport_clear_filters_button:
+                createView(inflater, container, null, null, true);
+                setupMenu();
+                departureDateEditText.setText("");
+                numberOfTicketsBar.setProgress(1);
+                numberOfTicketsTextView.setText("Number of tickets: 1");
+                break;
         }
+    }
 
+    private View.OnClickListener buyTicket(String ticketId) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<ArrayList<String>> data = flightDBHelper.getRecords(FlightReaderContract.FlightEntry._ID + "=?", new String[] {ticketId});
+                Integer numberOfTickets = numberOfTicketsBar.getProgress();
+//                TODO запись в личный кабинет
+            }
+        };
     }
 
     private ArrayAdapter<String> createSpinnerAdapter(String[] listItems) {
