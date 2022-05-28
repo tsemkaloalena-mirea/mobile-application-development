@@ -5,12 +5,13 @@
       <map>
         <entry key="..\:/mirea/mobile-application-development/TravelCompanyApplication/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/mirea/mobile-application-development/TravelCompanyApplication/app/src/main/res/layout/fragment_account.xml" value="0.1532567049808429" />
-        <entry key="..\:/mirea/mobile-application-development/TravelCompanyApplication/app/src/main/res/layout/fragment_city.xml" value="0.1" />
+        <entry key="..\:/mirea/mobile-application-development/TravelCompanyApplication/app/src/main/res/layout/fragment_city.xml" value="0.264" />
+        <entry key="..\:/mirea/mobile-application-development/TravelCompanyApplication/app/src/main/res/layout/fragment_city_list.xml" value="0.11778115501519756" />
         <entry key="..\:/mirea/mobile-application-development/TravelCompanyApplication/app/src/main/res/layout/fragment_flights.xml" value="0.1" />
-        <entry key="..\:/mirea/mobile-application-development/TravelCompanyApplication/app/src/main/res/layout/fragment_guide.xml" value="0.22282608695652173" />
+        <entry key="..\:/mirea/mobile-application-development/TravelCompanyApplication/app/src/main/res/layout/fragment_guide.xml" value="0.1" />
         <entry key="..\:/mirea/mobile-application-development/TravelCompanyApplication/app/src/main/res/layout/fragment_home.xml" value="0.128" />
-        <entry key="..\:/mirea/mobile-application-development/TravelCompanyApplication/app/src/main/res/layout/fragment_hotels.xml" value="0.2" />
-        <entry key="..\:/mirea/mobile-application-development/TravelCompanyApplication/app/src/main/res/menu/bottom_nav_menu.xml" value="0.1" />
+        <entry key="..\:/mirea/mobile-application-development/TravelCompanyApplication/app/src/main/res/layout/fragment_hotels.xml" value="0.264" />
+        <entry key="..\:/mirea/mobile-application-development/TravelCompanyApplication/app/src/main/res/menu/bottom_nav_menu.xml" value="0.128" />
       </map>
     </option>
   </component>

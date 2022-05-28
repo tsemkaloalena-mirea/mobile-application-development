@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements HeadlinesFragment
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
-
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {

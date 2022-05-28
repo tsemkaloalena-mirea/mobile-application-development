@@ -61,10 +61,6 @@ public class HotelsViewBuilder implements View.OnClickListener {
         this.accountHotelDBHelper = accountHotelDBHelper;
     }
 
-//    public HotelsViewBuilder(HotelDBHelper hotelDBHelper) {
-//        this.hotelDBHelper = hotelDBHelper;
-//    }
-
     public View changeView() {
         String city = cityDropdown.getSelectedItem().toString();
 
@@ -126,11 +122,13 @@ public class HotelsViewBuilder implements View.OnClickListener {
             bookHotelButton.setText("Book room");
             bookHotelButton.setId(Integer.parseInt(row.get(0)) * 10000 + 7);
             bookHotelButton.setOnClickListener(bookRoom(row.get(0)));
+            bookHotelButton.setPadding(0, 10, 0, 10);
+            bookHotelButton.setBackgroundColor(view.getResources().getColor(R.color.yellow));
             tableLayout.addView(bookHotelButton);
 
             View tableDivider = new View(view.getContext());
             tableDivider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2));
-            tableDivider.setBackgroundColor(view.getResources().getColor(R.color.table_divider));
+            tableDivider.setBackgroundColor(view.getResources().getColor(R.color.coral));
 
             layout.addView(tableLayout);
             layout.addView(tableDivider);
@@ -175,15 +173,17 @@ public class HotelsViewBuilder implements View.OnClickListener {
         tableLayout.addView(hotelStarBarRow);
 
         TableRow cityRow = new TableRow(view.getContext());
-        TableLayout.LayoutParams cityRowLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT);
+        TableLayout.LayoutParams cityRowLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT, 1);
         cityRow.setLayoutParams(cityRowLayoutParams);
-        TableRow.LayoutParams cityLayoutParams = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1);
+        TableRow.LayoutParams cityLayoutParams = new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1);
         TextView cityView = createTableColumn(view, cityLayoutParams, row.get(1), 18, Integer.parseInt(row.get(0)) * 10000 + 3);
         TableRow.LayoutParams mapLinkLayoutParams = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1);
         Button linkMapButton = new Button(view.getContext());
         linkMapButton.setLayoutParams(mapLinkLayoutParams);
         linkMapButton.setText("Open map");
         linkMapButton.setId(Integer.parseInt(row.get(0)) * 10000 + 4);
+        linkMapButton.setPadding(0, 10, 0, 10);
+        linkMapButton.setBackgroundColor(view.getResources().getColor(R.color.mint));
         linkMapButton.setOnClickListener(openMap(view, row.get(3)));
         cityRow.addView(cityView);
         cityRow.addView(linkMapButton);

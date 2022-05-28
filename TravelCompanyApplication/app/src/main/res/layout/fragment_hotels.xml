@@ -32,7 +32,7 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:focusable="false"
-                android:hint="Arrival date"
+                android:hint="@string/arrival_date"
                 android:inputType="date"
                 android:paddingTop="15dp"
                 android:textSize="16sp" />
@@ -44,7 +44,7 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:focusable="false"
-                android:hint="Departure date"
+                android:hint="@string/departure_date"
                 android:inputType="date"
                 android:paddingTop="15dp"
                 android:textSize="16sp" />
@@ -55,7 +55,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Hotel stars"
+            android:justificationMode="inter_word"
+            android:text="@string/hotel_stars"
             android:textColor="#000000"
             android:textSize="16sp" />
 
@@ -65,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:minHeight="48dp"
-            android:text="1 star"
+            android:text="@string/_1_star"
             android:textSize="16sp" />
 
         <CheckBox
@@ -74,7 +75,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:minHeight="48dp"
-            android:text="2 stars"
+            android:text="@string/_2_stars"
             android:textSize="16sp" />
 
         <CheckBox
@@ -83,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:minHeight="48dp"
-            android:text="3 stars"
+            android:text="@string/_3_stars"
             android:textSize="16sp" />
 
         <CheckBox
@@ -92,7 +93,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:minHeight="48dp"
-            android:text="4 stars"
+            android:text="@string/_4_stars"
             android:textSize="16sp" />
 
         <CheckBox
@@ -101,7 +102,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:minHeight="48dp"
-            android:text="5 stars"
+            android:text="@string/_5_stars"
             android:textSize="16sp" />
 
         <CheckBox
@@ -111,7 +112,7 @@
             android:layout_marginBottom="10dp"
             android:layout_weight="1"
             android:minHeight="48dp"
-            android:text="no stars"
+            android:text="@string/no_stars"
             android:textSize="16sp" />
 
         <LinearLayout
@@ -125,7 +126,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Adults"
+                android:text="@string/adults"
                 android:textColor="#000000"
                 android:textSize="16sp" />
 
@@ -149,7 +150,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Kids"
+                android:text="@string/kids"
                 android:textColor="#000000"
                 android:textSize="16sp" />
 
@@ -170,7 +171,7 @@
             android:layout_marginBottom="10dp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:text="Find hotels" />
+            android:text="@string/find_hotels" />
 
         <Button
             android:id="@+id/hotel_clear_filters_button"
@@ -180,7 +181,7 @@
             android:layout_weight="1"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:text="Clear filters" />
+            android:text="@string/clear_filters" />
 
         <LinearLayout
             android:id="@+id/hotels_container"

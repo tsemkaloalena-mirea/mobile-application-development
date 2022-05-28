@@ -104,7 +104,7 @@ public class FlightsViewBuilder implements View.OnClickListener {
 
             View tableDivider = new View(view.getContext());
             tableDivider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2));
-            tableDivider.setBackgroundColor(view.getResources().getColor(R.color.table_divider));
+            tableDivider.setBackgroundColor(view.getResources().getColor(R.color.coral));
 
             if (!update) {
                 departureCities.add(row.get(1));

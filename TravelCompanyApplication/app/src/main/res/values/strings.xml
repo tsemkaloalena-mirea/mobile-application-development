@@ -10,9 +10,21 @@
     <string name="user_name">Name</string>
     <string name="user_e_mail">E-mail</string>
     <string name="booked_rooms">Booked rooms</string>
-    <string name="departure_date">Departure date</string>
     <string name="number_of_tickets">Number of tickets</string>
     <string name="find_flights">Find flights</string>
-    <string name="clear_filters">Clear filters</string>
     <string name="choose_city_title">Choose the city you want to travel</string>
+    <string name="entertainment_link_title">Learn about entertainment in this city</string>
+    <string name="find_hotels">Find hotels</string>
+    <string name="departure_date">Departure date</string>
+    <string name="kids">Kids</string>
+    <string name="clear_filters">Clear filters</string>
+    <string name="arrival_date">Arrival date</string>
+    <string name="hotel_stars">Hotel stars</string>
+    <string name="_5_stars">5 stars</string>
+    <string name="no_stars">no stars</string>
+    <string name="_1_star">1 star</string>
+    <string name="_3_stars">3 stars</string>
+    <string name="_4_stars">4 stars</string>
+    <string name="adults">Adults</string>
+    <string name="_2_stars">2 stars</string>
 </resources>

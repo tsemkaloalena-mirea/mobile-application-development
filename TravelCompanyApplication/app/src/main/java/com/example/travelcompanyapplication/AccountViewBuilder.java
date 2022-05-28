@@ -56,31 +56,6 @@ public class AccountViewBuilder {
         this.accountFlightDBHelper = accountFlightDBHelper;
     }
 
-//    public View changeView() {
-//        String departureCity = departureCityDropdown.getSelectedItem().toString();
-//        String arrivalCity = arrivalCityDropdown.getSelectedItem().toString();
-//        String departureDate = departureDateEditText.getText().toString();
-//        Integer numberOfTickets = numberOfTicketsBar.getProgress();
-//
-//        ArrayList<String> selection = new ArrayList<>();
-//        ArrayList<String> selectionArgs = new ArrayList<>();
-//        if (!("Departure city".equals(departureCity))) {
-//            selection.add(FlightReaderContract.FlightEntry.DEPARTURE_CITY + "=?");
-//            selectionArgs.add(departureCity);
-//        }
-//        if (!("Arrival city".equals(arrivalCity))) {
-//            selection.add(FlightReaderContract.FlightEntry.ARRIVAL_CITY + "=?");
-//            selectionArgs.add(arrivalCity);
-//        }
-//        if (!("".equals(departureDate))) {
-//            selection.add(FlightReaderContract.FlightEntry.DEPARTURE_DATE + " LIKE ?");
-//            selectionArgs.add("%" + departureDate + "%");
-//        }
-//
-//        view = createView(inflater, container, String.join(" and ", selection), selectionArgs.toArray(new String[0]), true);
-//        return view;
-//    }
-
     public View createView(LayoutInflater inflater, ViewGroup container, String selection, String[] selectionArgs, Boolean update) {
         if (!update) {
             this.inflater = inflater;
@@ -101,7 +76,7 @@ public class AccountViewBuilder {
 
             View tableDivider = new View(view.getContext());
             tableDivider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2));
-            tableDivider.setBackgroundColor(view.getResources().getColor(R.color.table_divider));
+            tableDivider.setBackgroundColor(view.getResources().getColor(R.color.coral));
 
             flightsLayout.addView(tableLayout);
             flightsLayout.addView(tableDivider);
@@ -114,7 +89,7 @@ public class AccountViewBuilder {
 
             View tableDivider = new View(view.getContext());
             tableDivider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2));
-            tableDivider.setBackgroundColor(view.getResources().getColor(R.color.table_divider));
+            tableDivider.setBackgroundColor(view.getResources().getColor(R.color.coral));
 
             hotelsLayout.addView(tableLayout);
             hotelsLayout.addView(tableDivider);
@@ -134,17 +109,20 @@ public class AccountViewBuilder {
         Integer totalCost = Integer.valueOf(flightData.get(6).replace(" ", "")) * Integer.valueOf(flightTicket.get(2)) / 60;
 
         TableLayout.LayoutParams totalCostLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
-        totalCostLayoutParams.setMargins(0, 20, 0, 0);
+        totalCostLayoutParams.setMargins(0, 50, 0, 20);
         TextView totalCostView = HotelsViewBuilder.createTableColumn(view, totalCostLayoutParams, "Total cost: " + totalCost + " $", 24, Integer.parseInt(flightData.get(0)) * 10000 + 18);
+        totalCostView.setTextColor(view.getResources().getColor(R.color.burgundy));
         tableLayout.addView(totalCostView);
 
         Button deleteFlightButton = new Button(view.getContext());
         TableLayout.LayoutParams deleteFlightButtonLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
         deleteFlightButtonLayoutParams.setMargins(0, 20, 0, 30);
         deleteFlightButton.setLayoutParams(deleteFlightButtonLayoutParams);
-        deleteFlightButton.setText("Delete flight");
+        deleteFlightButton.setText("Return ticket");
         deleteFlightButton.setId(Integer.parseInt(flightData.get(0)) * 10000 + 19);
         deleteFlightButton.setOnClickListener(deleteFlight(flightTicket.get(0)));
+        deleteFlightButton.setBackgroundColor(view.getResources().getColor(R.color.coral));
+        deleteFlightButton.setPadding(0, 10, 0, 10);
         tableLayout.addView(deleteFlightButton);
 
         return tableLayout;
@@ -192,16 +170,19 @@ public class AccountViewBuilder {
         tableLayout.addView(numberOfNightsView);
 
         TableLayout.LayoutParams totalCostLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
-        totalCostLayoutParams.setMargins(0, 50, 0, 0);
+        totalCostLayoutParams.setMargins(0, 50, 0, 20);
         TextView totalCostView = HotelsViewBuilder.createTableColumn(view, totalCostLayoutParams, "Total cost for room: " + totalCost + " $", 24, Integer.parseInt(hotelData.get(0)) * 10000 + 15);
+        totalCostView.setTextColor(view.getResources().getColor(R.color.burgundy));
         tableLayout.addView(totalCostView);
 
         Button deleteHotelButton = new Button(view.getContext());
         TableLayout.LayoutParams deleteHotelButtonLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
         deleteHotelButtonLayoutParams.setMargins(0, 20, 0, 30);
         deleteHotelButton.setLayoutParams(deleteHotelButtonLayoutParams);
-        deleteHotelButton.setText("Delete room");
+        deleteHotelButton.setText("Cancel booking");
         deleteHotelButton.setId(Integer.parseInt(hotelData.get(0)) * 10000 + 16);
+        deleteHotelButton.setBackgroundColor(view.getResources().getColor(R.color.coral));
+        deleteHotelButton.setPadding(0, 10, 0, 10);
         deleteHotelButton.setOnClickListener(deleteRoom(bookingInfo.get(0)));
         tableLayout.addView(deleteHotelButton);
 
