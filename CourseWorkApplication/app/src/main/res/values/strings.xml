@@ -1,9 +1,0 @@
-<resources>
-    <string name="app_name">CourseWorkApplication</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="title_home">Home</string>
-    <string name="title_account">Account</string>
-    <string name="title_flights">Flights</string>
-    <string name="title_hotels">Hotels</string>
-    <string name="title_entertainment">Entertainment</string>
-</resources>

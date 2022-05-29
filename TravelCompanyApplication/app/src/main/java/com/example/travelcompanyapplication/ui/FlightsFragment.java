@@ -9,9 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.travelcompanyapplication.FlightsViewBuilder;
+import com.example.travelcompanyapplication.MainActivity;
 import com.example.travelcompanyapplication.databinding.FragmentFlightsBinding;
-import com.example.travelcompanyapplication.db_controller.db_helpers.AccountFlightDBHelper;
-import com.example.travelcompanyapplication.db_controller.db_helpers.FlightDBHelper;
+import com.example.travelcompanyapplication.db_controller.TravelCompanyDBHelper;
 
 public class FlightsFragment extends Fragment {
     private View view;
@@ -19,10 +19,10 @@ public class FlightsFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        FlightDBHelper flightDBHelper = new FlightDBHelper(getContext());
-        AccountFlightDBHelper accountFlightDBHelper = new AccountFlightDBHelper(getContext());
-        FlightsViewBuilder flightsViewBuilder = new FlightsViewBuilder(flightDBHelper, accountFlightDBHelper);
-        view = flightsViewBuilder.createView(inflater, container, null, null, false);
+        TravelCompanyDBHelper travelCompanyDBHelper = new TravelCompanyDBHelper(getContext());
+        FlightsViewBuilder flightsViewBuilder = new FlightsViewBuilder(travelCompanyDBHelper, inflater, container);
+        view = flightsViewBuilder.getView();
+        MainActivity.removeView(view);
         return view;
     }
 

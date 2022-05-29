@@ -9,11 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.travelcompanyapplication.AccountViewBuilder;
+import com.example.travelcompanyapplication.MainActivity;
 import com.example.travelcompanyapplication.databinding.FragmentAccountBinding;
-import com.example.travelcompanyapplication.db_controller.db_helpers.AccountFlightDBHelper;
-import com.example.travelcompanyapplication.db_controller.db_helpers.AccountHotelDBHelper;
-import com.example.travelcompanyapplication.db_controller.db_helpers.FlightDBHelper;
-import com.example.travelcompanyapplication.db_controller.db_helpers.HotelDBHelper;
+import com.example.travelcompanyapplication.db_controller.TravelCompanyDBHelper;
 
 public class AccountFragment extends Fragment {
     private View view;
@@ -21,12 +19,10 @@ public class AccountFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        HotelDBHelper hotelDBHelper = new HotelDBHelper(getContext());
-        AccountHotelDBHelper accountHotelDBHelper = new AccountHotelDBHelper(getContext());
-        FlightDBHelper flightDBHelper = new FlightDBHelper(getContext());
-        AccountFlightDBHelper accountFlightDBHelper = new AccountFlightDBHelper(getContext());
-        AccountViewBuilder accountViewBuilder = new AccountViewBuilder(hotelDBHelper, accountHotelDBHelper, flightDBHelper, accountFlightDBHelper);
-        view = accountViewBuilder.createView(inflater, container, null, null, false);
+        TravelCompanyDBHelper travelCompanyDBHelper = new TravelCompanyDBHelper(getContext());
+        AccountViewBuilder accountViewBuilder = new AccountViewBuilder(travelCompanyDBHelper, inflater, container);
+        view = accountViewBuilder.createView(null, null);
+        MainActivity.removeView(view);
         return view;
     }
 

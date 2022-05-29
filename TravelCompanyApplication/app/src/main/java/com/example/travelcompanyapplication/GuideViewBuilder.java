@@ -5,32 +5,27 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.text.LineBreaker;
 import android.net.Uri;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
-import com.example.travelcompanyapplication.db_controller.db_contracts.HotelReaderContract;
-import com.example.travelcompanyapplication.db_controller.db_helpers.GuideDBHelper;
+import com.example.travelcompanyapplication.db_controller.TravelCompanyContract;
+import com.example.travelcompanyapplication.db_controller.TravelCompanyDBHelper;
 
 import java.util.ArrayList;
 
 public class GuideViewBuilder {
     private ActionBar actionBar;
-    private GuideDBHelper guideDBHelper;
-    private View view;
+    private TravelCompanyDBHelper travelCompanyDBHelper;
+    private static View view;
     private static Long currentCityId = -1L;
 
-    public GuideViewBuilder(GuideDBHelper guideDBHelper, LayoutInflater inflater, ViewGroup container, ActionBar actionBar) {
-        this.guideDBHelper = guideDBHelper;
+    public GuideViewBuilder(TravelCompanyDBHelper travelCompanyDBHelper, LayoutInflater inflater, ViewGroup container, ActionBar actionBar) {
+        this.travelCompanyDBHelper = travelCompanyDBHelper;
         this.actionBar = actionBar;
         view = inflater.inflate(R.layout.fragment_guide, container, false);
         if (currentCityId == -1) {
@@ -49,7 +44,7 @@ public class GuideViewBuilder {
     public View createCityView() {
         LinearLayout cityLayout = (LinearLayout) view.findViewById(R.id.city_guide_container);
         cityLayout.removeAllViewsInLayout();
-        ArrayList<String> data = guideDBHelper.getRecords(HotelReaderContract.HotelEntry._ID + "=?", new String[]{String.valueOf(currentCityId)}).get(0);
+        ArrayList<String> data = travelCompanyDBHelper.getGuideRecords(TravelCompanyContract.HotelEntry._ID + "=?", new String[]{String.valueOf(currentCityId)}).get(0);
 
         LinearLayout.LayoutParams cityNameLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         TextView cityNameView = new TextView(view.getContext());
@@ -74,7 +69,8 @@ public class GuideViewBuilder {
         learnEntertainmentButton.setAllCaps(false);
         learnEntertainmentButton.setOnClickListener(openLink(data.get(3)));
         learnEntertainmentButton.setPadding(0, 10, 0, 10);
-        learnEntertainmentButton.setBackgroundColor(view.getResources().getColor(R.color.coral));
+        learnEntertainmentButton.setBackgroundColor(view.getResources().getColor(R.color.dark_blue));
+        learnEntertainmentButton.setTextColor(view.getResources().getColor(R.color.white));
         cityLayout.addView(learnEntertainmentButton);
 
         return view;
@@ -89,8 +85,9 @@ public class GuideViewBuilder {
         titleLayoutParams.setMargins(0, 20, 0, 30);
         TextView titleView = new TextView(view.getContext());
         titleView.setLayoutParams(titleLayoutParams);
+        titleView.setTextSize(24);
         titleView.setText(R.string.choose_city_title);
-        ArrayList<ArrayList<String>> data = guideDBHelper.getRecords(null, null);
+        ArrayList<ArrayList<String>> data = travelCompanyDBHelper.getGuideRecords(null, null);
         cityListLayout.addView(titleView);
 
         for (ArrayList<String> row : data) {
@@ -103,7 +100,7 @@ public class GuideViewBuilder {
             openCityButton.setId(Integer.parseInt(row.get(0)) * 10000 + 1);
             GradientDrawable border = new GradientDrawable();
             border.setCornerRadius(15);
-            border.setStroke(5, view.getResources().getColor(R.color.coral));
+            border.setStroke(5, view.getResources().getColor(R.color.blue));
             openCityButton.setBackground(border);
             openCityButton.setPadding(0, 10, 0, 10);
             openCityButton.setOnClickListener(openCity(row.get(0)));

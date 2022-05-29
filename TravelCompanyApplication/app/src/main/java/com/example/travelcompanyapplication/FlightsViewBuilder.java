@@ -20,11 +20,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.example.travelcompanyapplication.db_controller.db_contracts.AccountFlightReaderContract;
-import com.example.travelcompanyapplication.db_controller.db_contracts.AccountHotelReaderContract;
-import com.example.travelcompanyapplication.db_controller.db_contracts.FlightReaderContract;
-import com.example.travelcompanyapplication.db_controller.db_helpers.AccountFlightDBHelper;
-import com.example.travelcompanyapplication.db_controller.db_helpers.FlightDBHelper;
+import com.example.travelcompanyapplication.db_controller.TravelCompanyContract;
+import com.example.travelcompanyapplication.db_controller.TravelCompanyDBHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,8 +29,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 
 public class FlightsViewBuilder implements View.OnClickListener {
-    private AccountFlightDBHelper accountFlightDBHelper;
-    private FlightDBHelper flightDBHelper;
+    private TravelCompanyDBHelper travelCompanyDBHelper;
     private LayoutInflater inflater;
     private ViewGroup container;
     private EditText departureDateEditText;
@@ -43,17 +39,25 @@ public class FlightsViewBuilder implements View.OnClickListener {
     private SeekBar numberOfTicketsBar;
     private Button findFlightsButton;
     private Button clearFiltersButton;
-    private View view;
+    private static View view;
     private LinearLayout layout;
     ArrayList<String> departureCities = new ArrayList<String>();
     ArrayList<String> arrivalCities = new ArrayList<String>();
 
-    public FlightsViewBuilder(FlightDBHelper flightDBHelper, AccountFlightDBHelper accountFlightDBHelper) {
-        this.flightDBHelper = flightDBHelper;
-        this.accountFlightDBHelper = accountFlightDBHelper;
+    public FlightsViewBuilder(TravelCompanyDBHelper travelCompanyDBHelper, LayoutInflater inflater, ViewGroup container) {
+        this.travelCompanyDBHelper = travelCompanyDBHelper;
+        this.inflater = inflater;
+        this.container = container;
+        if (view == null) {
+            createView(null, null, false);
+        }
     }
 
-    public View changeView() {
+    public View getView() {
+        return view;
+    }
+
+    private View changeView() {
         String departureCity = departureCityDropdown.getSelectedItem().toString();
         String arrivalCity = arrivalCityDropdown.getSelectedItem().toString();
         String departureDate = departureDateEditText.getText().toString();
@@ -62,33 +66,31 @@ public class FlightsViewBuilder implements View.OnClickListener {
         ArrayList<String> selection = new ArrayList<>();
         ArrayList<String> selectionArgs = new ArrayList<>();
         if (!("Departure city".equals(departureCity))) {
-            selection.add(FlightReaderContract.FlightEntry.DEPARTURE_CITY + "=?");
+            selection.add(TravelCompanyContract.FlightEntry.DEPARTURE_CITY + "=?");
             selectionArgs.add(departureCity);
         }
         if (!("Arrival city".equals(arrivalCity))) {
-            selection.add(FlightReaderContract.FlightEntry.ARRIVAL_CITY + "=?");
+            selection.add(TravelCompanyContract.FlightEntry.ARRIVAL_CITY + "=?");
             selectionArgs.add(arrivalCity);
         }
         if (!("".equals(departureDate))) {
-            selection.add(FlightReaderContract.FlightEntry.DEPARTURE_DATE + " LIKE ?");
+            selection.add(TravelCompanyContract.FlightEntry.DEPARTURE_DATE + " LIKE ?");
             selectionArgs.add("%" + departureDate + "%");
         }
 
-        view = createView(inflater, container, String.join(" and ", selection), selectionArgs.toArray(new String[0]), true);
+        view = createView(String.join(" and ", selection), selectionArgs.toArray(new String[0]), true);
         return view;
     }
 
-    public View createView(LayoutInflater inflater, ViewGroup container, String selection, String[] selectionArgs, Boolean update) {
+    private View createView(String selection, String[] selectionArgs, Boolean update) {
         if (!update) {
-            this.inflater = inflater;
-            this.container = container;
             view = inflater.inflate(R.layout.fragment_flights, container, false);
             layout = (LinearLayout) view.findViewById(R.id.flights_container);
         } else {
             layout.removeAllViewsInLayout();
         }
 
-        ArrayList<ArrayList<String>> data = flightDBHelper.getRecords(selection, selectionArgs);
+        ArrayList<ArrayList<String>> data = travelCompanyDBHelper.getFlightRecords(selection, selectionArgs);
 
         for (ArrayList<String> row : data) {
             TableLayout tableLayout = createTableInfo(view, row);
@@ -98,13 +100,17 @@ public class FlightsViewBuilder implements View.OnClickListener {
             ticketBuyButtonLayoutParams.setMargins(0, 20, 0, 30);
             ticketBuyButton.setLayoutParams(ticketBuyButtonLayoutParams);
             ticketBuyButton.setText("Buy ticket");
+            ticketBuyButton.setPadding(0, 15, 0, 15);
+            ticketBuyButton.setBackgroundColor(view.getResources().getColor(R.color.dark_blue));
+
+            ticketBuyButton.setTextColor(view.getResources().getColor(R.color.white));
             ticketBuyButton.setId(Integer.parseInt(row.get(0)) * 10000 + 9);
             ticketBuyButton.setOnClickListener(buyTicket(row.get(0)));
             tableLayout.addView(ticketBuyButton);
 
             View tableDivider = new View(view.getContext());
-            tableDivider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2));
-            tableDivider.setBackgroundColor(view.getResources().getColor(R.color.coral));
+            tableDivider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 3));
+            tableDivider.setBackgroundColor(view.getResources().getColor(R.color.dark_blue));
 
             if (!update) {
                 departureCities.add(row.get(1));
@@ -239,7 +245,7 @@ public class FlightsViewBuilder implements View.OnClickListener {
                 this.view = changeView();
                 break;
             case R.id.airport_clear_filters_button:
-                createView(inflater, container, null, null, true);
+                createView(null, null, true);
                 setupMenu();
                 departureDateEditText.setText("");
                 numberOfTicketsBar.setProgress(1);
@@ -254,15 +260,16 @@ public class FlightsViewBuilder implements View.OnClickListener {
             public void onClick(View v) {
                 Integer numberOfTickets = numberOfTicketsBar.getProgress();
 
-                SQLiteDatabase database = accountFlightDBHelper.getWritableDatabase();
+                SQLiteDatabase database = travelCompanyDBHelper.getWritableDatabase();
                 ContentValues values = new ContentValues();
-                values.put(AccountFlightReaderContract.FlightEntry.FLIGHT_ID, ticketId);
-                values.put(AccountFlightReaderContract.FlightEntry.TICKETS_NUMBER, numberOfTickets);
+                values.put(TravelCompanyContract.AccountFlightEntry.FLIGHT_ID, ticketId);
+                values.put(TravelCompanyContract.AccountFlightEntry.TICKETS_NUMBER, numberOfTickets);
 
                 long newRowId = database.insert(
-                        AccountFlightReaderContract.FlightEntry.TABLE_NAME,
+                        TravelCompanyContract.AccountFlightEntry.TABLE_NAME,
                         null,
                         values);
+                createAlert("Ticket", "The ticket was successfully bought");
             }
         };
     }
@@ -311,5 +318,20 @@ public class FlightsViewBuilder implements View.OnClickListener {
                 new DatePickerDialog(view.getContext(), date, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
+    }
+
+    private void createAlert(String title, String message) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(view.getContext());
+
+        alert.setTitle(title);
+        alert.setMessage(message);
+
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+            }
+        });
+
+        alert.show();
     }
 }

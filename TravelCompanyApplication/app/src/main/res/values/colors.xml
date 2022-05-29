@@ -8,9 +8,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#515151</color>
-    <color name="mint">#62CCAD</color>
-    <color name="yellow">#C6C72C</color>
-    <color name="coral">#FF4040</color>
-    <color name="burgundy">#500234</color>
-    <color name="button_background">#62CCAD</color>
+    <color name="light_blue">#CEDDF4</color>
+    <color name="dark_blue">#005A5B</color>
+    <color name="blue">#07A2A6</color>
+    <color name="yellow">#C5B800</color>
 </resources>

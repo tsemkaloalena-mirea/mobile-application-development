@@ -1,95 +1,98 @@
 package com.example.travelcompanyapplication;
 
-import android.app.DatePickerDialog;
-import android.content.Intent;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.net.Uri;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RatingBar;
-import android.widget.SeekBar;
-import android.widget.Spinner;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.example.travelcompanyapplication.db_controller.db_contracts.AccountFlightReaderContract;
-import com.example.travelcompanyapplication.db_controller.db_contracts.AccountHotelReaderContract;
-import com.example.travelcompanyapplication.db_controller.db_contracts.FlightReaderContract;
-import com.example.travelcompanyapplication.db_controller.db_contracts.HotelReaderContract;
-import com.example.travelcompanyapplication.db_controller.db_helpers.AccountFlightDBHelper;
-import com.example.travelcompanyapplication.db_controller.db_helpers.AccountHotelDBHelper;
-import com.example.travelcompanyapplication.db_controller.db_helpers.FlightDBHelper;
-import com.example.travelcompanyapplication.db_controller.db_helpers.HotelDBHelper;
-import com.example.travelcompanyapplication.ui.DownloadImageFromInternet;
+import com.example.travelcompanyapplication.db_controller.TravelCompanyContract;
+import com.example.travelcompanyapplication.db_controller.TravelCompanyDBHelper;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashSet;
 
-public class AccountViewBuilder {
-    private FlightDBHelper flightDBHelper;
-    private HotelDBHelper hotelDBHelper;
-    private AccountHotelDBHelper accountHotelDBHelper;
-    private AccountFlightDBHelper accountFlightDBHelper;
+public class AccountViewBuilder implements View.OnClickListener {
+    private TravelCompanyDBHelper travelCompanyDBHelper;
     private LayoutInflater inflater;
     private ViewGroup container;
-    private View view;
+    private static View view;
     private LinearLayout flightsLayout;
     private LinearLayout hotelsLayout;
+    private EditText nameEditText;
+    private EditText emailEditText;
+    private Button saveButton;
+    private Boolean isUpdate = false;
+    private SharedPreferences sharedPreferences;
 
-    public AccountViewBuilder(HotelDBHelper hotelDBHelper, AccountHotelDBHelper accountHotelDBHelper, FlightDBHelper flightDBHelper, AccountFlightDBHelper accountFlightDBHelper) {
-        this.hotelDBHelper = hotelDBHelper;
-        this.accountHotelDBHelper = accountHotelDBHelper;
-        this.flightDBHelper = flightDBHelper;
-        this.accountFlightDBHelper = accountFlightDBHelper;
+    public AccountViewBuilder(TravelCompanyDBHelper travelCompanyDBHelper, LayoutInflater inflater, ViewGroup container) {
+        this.travelCompanyDBHelper = travelCompanyDBHelper;
+        this.inflater = inflater;
+        this.container = container;
     }
 
-    public View createView(LayoutInflater inflater, ViewGroup container, String selection, String[] selectionArgs, Boolean update) {
-        if (!update) {
-            this.inflater = inflater;
-            this.container = container;
+    private void setupTopView() {
+        nameEditText = (EditText) view.findViewById(R.id.account_name_editText);
+        emailEditText = (EditText) view.findViewById(R.id.account_email_editText);
+        saveButton = (Button) view.findViewById(R.id.account_save_button);
+        saveButton.setOnClickListener(this);
+
+        String name = sharedPreferences.getString("accountName", "accountName");
+        String email = sharedPreferences.getString("accountEmail", "accountEmail");
+        nameEditText.setText(name);
+        emailEditText.setText(email);
+    }
+
+    public View createView(String selection, String[] selectionArgs) {
+        if (!isUpdate) {
             view = inflater.inflate(R.layout.fragment_account, container, false);
             flightsLayout = (LinearLayout) view.findViewById(R.id.chosen_flights_container);
             hotelsLayout = (LinearLayout) view.findViewById(R.id.chosen_hotels_container);
+            sharedPreferences = view.getContext().getSharedPreferences(view.getContext().getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            isUpdate = true;
         } else {
             flightsLayout.removeAllViewsInLayout();
             hotelsLayout.removeAllViewsInLayout();
         }
 
-        ArrayList<ArrayList<String>> flightTicketsData = accountFlightDBHelper.getRecords(selection, selectionArgs);
+        setupTopView();
+
+        ArrayList<ArrayList<String>> flightTicketsData = travelCompanyDBHelper.getAccountFlightRecords(selection, selectionArgs);
 
         for (ArrayList<String> row : flightTicketsData) {
 
             TableLayout tableLayout = createFlightTable(row);
 
             View tableDivider = new View(view.getContext());
-            tableDivider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2));
-            tableDivider.setBackgroundColor(view.getResources().getColor(R.color.coral));
+            tableDivider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 3));
+            tableDivider.setBackgroundColor(view.getResources().getColor(R.color.dark_blue));
 
             flightsLayout.addView(tableLayout);
             flightsLayout.addView(tableDivider);
         }
 
-        ArrayList<ArrayList<String>> bookedHotelsData = accountHotelDBHelper.getRecords(selection, selectionArgs);
+        ArrayList<ArrayList<String>> bookedHotelsData = travelCompanyDBHelper.getAccountHotelRecords(selection, selectionArgs);
 
         for (ArrayList<String> row : bookedHotelsData) {
             TableLayout tableLayout = createHotelTable(row);
 
             View tableDivider = new View(view.getContext());
-            tableDivider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2));
-            tableDivider.setBackgroundColor(view.getResources().getColor(R.color.coral));
+            tableDivider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 3));
+            tableDivider.setBackgroundColor(view.getResources().getColor(R.color.dark_blue));
 
             hotelsLayout.addView(tableLayout);
             hotelsLayout.addView(tableDivider);
@@ -98,7 +101,7 @@ public class AccountViewBuilder {
     }
 
     private TableLayout createFlightTable(ArrayList<String> flightTicket) {
-        ArrayList<String> flightData = flightDBHelper.getRecords(FlightReaderContract.FlightEntry._ID + " LIKE ?", new String[]{flightTicket.get(1)}).get(0);
+        ArrayList<String> flightData = travelCompanyDBHelper.getFlightRecords(TravelCompanyContract.FlightEntry._ID + " LIKE ?", new String[]{flightTicket.get(1)}).get(0);
         TableLayout tableLayout = FlightsViewBuilder.createTableInfo(view, flightData);
 
         TableLayout.LayoutParams numberOfTicketsLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
@@ -111,7 +114,8 @@ public class AccountViewBuilder {
         TableLayout.LayoutParams totalCostLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
         totalCostLayoutParams.setMargins(0, 50, 0, 20);
         TextView totalCostView = HotelsViewBuilder.createTableColumn(view, totalCostLayoutParams, "Total cost: " + totalCost + " $", 24, Integer.parseInt(flightData.get(0)) * 10000 + 18);
-        totalCostView.setTextColor(view.getResources().getColor(R.color.burgundy));
+//        totalCostView.setTextColor(view.getResources().getColor(R.color.dark_blue));
+        totalCostView.setTypeface(null, Typeface.BOLD);
         tableLayout.addView(totalCostView);
 
         Button deleteFlightButton = new Button(view.getContext());
@@ -121,7 +125,8 @@ public class AccountViewBuilder {
         deleteFlightButton.setText("Return ticket");
         deleteFlightButton.setId(Integer.parseInt(flightData.get(0)) * 10000 + 19);
         deleteFlightButton.setOnClickListener(deleteFlight(flightTicket.get(0)));
-        deleteFlightButton.setBackgroundColor(view.getResources().getColor(R.color.coral));
+        deleteFlightButton.setBackgroundColor(view.getResources().getColor(R.color.blue));
+        deleteFlightButton.setTextColor(view.getResources().getColor(R.color.white));
         deleteFlightButton.setPadding(0, 10, 0, 10);
         tableLayout.addView(deleteFlightButton);
 
@@ -129,7 +134,7 @@ public class AccountViewBuilder {
     }
 
     private TableLayout createHotelTable(ArrayList<String> bookingInfo) {
-        ArrayList<String> hotelData = hotelDBHelper.getRecords(HotelReaderContract.HotelEntry._ID + " LIKE ?", new String[]{bookingInfo.get(3)}).get(0);
+        ArrayList<String> hotelData = travelCompanyDBHelper.getHotelRecords(TravelCompanyContract.HotelEntry._ID + " LIKE ?", new String[]{bookingInfo.get(3)}).get(0);
         TableLayout tableLayout = HotelsViewBuilder.createTableInfo(view, hotelData);
         TableLayout.LayoutParams adultsNumberLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
         adultsNumberLayoutParams.setMargins(0, 50, 0, 0);
@@ -172,7 +177,7 @@ public class AccountViewBuilder {
         TableLayout.LayoutParams totalCostLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT);
         totalCostLayoutParams.setMargins(0, 50, 0, 20);
         TextView totalCostView = HotelsViewBuilder.createTableColumn(view, totalCostLayoutParams, "Total cost for room: " + totalCost + " $", 24, Integer.parseInt(hotelData.get(0)) * 10000 + 15);
-        totalCostView.setTextColor(view.getResources().getColor(R.color.burgundy));
+        totalCostView.setTextColor(view.getResources().getColor(R.color.dark_blue));
         tableLayout.addView(totalCostView);
 
         Button deleteHotelButton = new Button(view.getContext());
@@ -181,7 +186,8 @@ public class AccountViewBuilder {
         deleteHotelButton.setLayoutParams(deleteHotelButtonLayoutParams);
         deleteHotelButton.setText("Cancel booking");
         deleteHotelButton.setId(Integer.parseInt(hotelData.get(0)) * 10000 + 16);
-        deleteHotelButton.setBackgroundColor(view.getResources().getColor(R.color.coral));
+        deleteHotelButton.setBackgroundColor(view.getResources().getColor(R.color.blue));
+        deleteHotelButton.setTextColor(view.getResources().getColor(R.color.white));
         deleteHotelButton.setPadding(0, 10, 0, 10);
         deleteHotelButton.setOnClickListener(deleteRoom(bookingInfo.get(0)));
         tableLayout.addView(deleteHotelButton);
@@ -193,11 +199,11 @@ public class AccountViewBuilder {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String selection = AccountHotelReaderContract.HotelEntry._ID + " LIKE ?";
+                String selection = TravelCompanyContract.AccountHotelEntry._ID + " LIKE ?";
                 String[] selectionArgs = {rowId};
-                SQLiteDatabase database = accountHotelDBHelper.getWritableDatabase();
-                database.delete(AccountHotelReaderContract.HotelEntry.TABLE_NAME, selection, selectionArgs);
-                createView(inflater, container, null, null, true);
+                SQLiteDatabase database = travelCompanyDBHelper.getWritableDatabase();
+                database.delete(TravelCompanyContract.AccountHotelEntry.TABLE_NAME, selection, selectionArgs);
+                createView(null, null);
             }
         };
     }
@@ -206,12 +212,37 @@ public class AccountViewBuilder {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String selection = AccountFlightReaderContract.FlightEntry._ID + " LIKE ?";
+                String selection = TravelCompanyContract.AccountFlightEntry._ID + " LIKE ?";
                 String[] selectionArgs = {rowId};
-                SQLiteDatabase database = accountFlightDBHelper.getWritableDatabase();
-                database.delete(AccountFlightReaderContract.FlightEntry.TABLE_NAME, selection, selectionArgs);
-                createView(inflater, container, null, null, true);
+                SQLiteDatabase database = travelCompanyDBHelper.getWritableDatabase();
+                database.delete(TravelCompanyContract.AccountFlightEntry.TABLE_NAME, selection, selectionArgs);
+                createView(null, null);
             }
         };
+    }
+
+    @Override
+    public void onClick(View view) {
+        String name = nameEditText.getText().toString();
+        String email = emailEditText.getText().toString();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("accountName", name);
+        editor.putString("accountEmail", email);
+        editor.commit();
+        createAlert("Account info", "Your data was successfully saved");
+    }
+
+    private void createAlert(String title, String message) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(view.getContext());
+
+        alert.setTitle(title);
+        alert.setMessage(message);
+
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+
+            }
+        });
+        alert.show();
     }
 }

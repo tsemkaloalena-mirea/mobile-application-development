@@ -4,13 +4,12 @@
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/yellow</item>
         <item name="colorPrimaryVariant">@color/grey</item>
-        <item name="colorOnPrimary">#007A05</item>
+        <item name="colorOnPrimary">@color/black</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">18sp</item>
-<!--        <item name="android:buttonStyle">#F00</item>-->
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/burgundy</item>
-        <item name="colorSecondaryVariant">#0040FF</item>
+        <item name="colorSecondary">@color/dark_blue</item>
+        <item name="colorSecondaryVariant">@color/blue</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>

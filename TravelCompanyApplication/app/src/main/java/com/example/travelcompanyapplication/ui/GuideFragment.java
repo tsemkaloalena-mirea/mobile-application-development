@@ -18,7 +18,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.travelcompanyapplication.GuideViewBuilder;
 import com.example.travelcompanyapplication.R;
 import com.example.travelcompanyapplication.databinding.FragmentGuideBinding;
-import com.example.travelcompanyapplication.db_controller.db_helpers.GuideDBHelper;
+import com.example.travelcompanyapplication.db_controller.TravelCompanyDBHelper;
 
 import java.util.List;
 
@@ -34,9 +34,9 @@ public class GuideFragment extends Fragment {
         setHasOptionsMenu(true);
         binding = FragmentGuideBinding.inflate(inflater, container, false);
         view = binding.getRoot();
-        GuideDBHelper guideDBHelper = new GuideDBHelper(getContext());
+        TravelCompanyDBHelper travelCompanyDBHelper = new TravelCompanyDBHelper(getContext());
         actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
-        guideViewBuilder = new GuideViewBuilder(guideDBHelper, inflater, container, actionBar);
+        guideViewBuilder = new GuideViewBuilder(travelCompanyDBHelper, inflater, container, actionBar);
         view = guideViewBuilder.getView();
         return view;
     }

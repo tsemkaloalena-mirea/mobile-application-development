@@ -9,30 +9,30 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.travelcompanyapplication.HotelsViewBuilder;
+import com.example.travelcompanyapplication.MainActivity;
 import com.example.travelcompanyapplication.databinding.FragmentHomeBinding;
 import com.example.travelcompanyapplication.databinding.FragmentHotelsBinding;
-import com.example.travelcompanyapplication.db_controller.db_helpers.AccountHotelDBHelper;
-import com.example.travelcompanyapplication.db_controller.db_helpers.HotelDBHelper;
+import com.example.travelcompanyapplication.db_controller.TravelCompanyDBHelper;
 
 public class HotelsFragment extends Fragment {
-    private View view;
-    private FragmentHotelsBinding binding;
+//    private FragmentHotelsBinding binding;
+    View view;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentHotelsBinding.inflate(inflater, container, false);
-        view = binding.getRoot();
-
-        HotelDBHelper hotelDBHelper = new HotelDBHelper(getContext());
-        AccountHotelDBHelper accountHotelDBHelper = new AccountHotelDBHelper(getContext());
-        HotelsViewBuilder hotelsViewBuilder = new HotelsViewBuilder(hotelDBHelper, accountHotelDBHelper);
-        view = hotelsViewBuilder.createView(inflater, container, null, null, false);
+//        binding = FragmentHotelsBinding.inflate(inflater, container, false);
+//        View view = binding.getRoot();
+        TravelCompanyDBHelper travelCompanyDBHelper = new TravelCompanyDBHelper(getContext());
+        HotelsViewBuilder hotelsViewBuilder = new HotelsViewBuilder(travelCompanyDBHelper, inflater, container);
+        view = hotelsViewBuilder.getView();
+//        MainActivity.removeView(view);
+        MainActivity.removeView(view);
         return view;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
+//        binding = null;
     }
 }

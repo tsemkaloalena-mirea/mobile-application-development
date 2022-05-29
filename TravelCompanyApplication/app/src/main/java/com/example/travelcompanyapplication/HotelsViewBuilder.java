@@ -24,10 +24,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.example.travelcompanyapplication.db_controller.db_contracts.AccountHotelReaderContract;
-import com.example.travelcompanyapplication.db_controller.db_helpers.AccountHotelDBHelper;
-import com.example.travelcompanyapplication.db_controller.db_helpers.HotelDBHelper;
-import com.example.travelcompanyapplication.db_controller.db_contracts.HotelReaderContract;
+import com.example.travelcompanyapplication.db_controller.TravelCompanyContract;
+import com.example.travelcompanyapplication.db_controller.TravelCompanyDBHelper;
 import com.example.travelcompanyapplication.ui.DownloadImageFromInternet;
 
 import java.text.SimpleDateFormat;
@@ -35,11 +33,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class HotelsViewBuilder implements View.OnClickListener {
-    private AccountHotelDBHelper accountHotelDBHelper;
-    private HotelDBHelper hotelDBHelper;
+    private TravelCompanyDBHelper travelCompanyDBHelper;
     private LayoutInflater inflater;
     private ViewGroup container;
-    private View view;
+    private static View view;
     private LinearLayout layout;
     private ArrayList<String> cities = new ArrayList<String>();
     private Spinner cityDropdown;
@@ -56,12 +53,21 @@ public class HotelsViewBuilder implements View.OnClickListener {
     private Button findHotelsButton;
     private Button clearFiltersButton;
 
-    public HotelsViewBuilder(HotelDBHelper hotelDBHelper, AccountHotelDBHelper accountHotelDBHelper) {
-        this.hotelDBHelper = hotelDBHelper;
-        this.accountHotelDBHelper = accountHotelDBHelper;
+    public HotelsViewBuilder(TravelCompanyDBHelper travelCompanyDBHelper, LayoutInflater inflater, ViewGroup container) {
+        this.travelCompanyDBHelper = travelCompanyDBHelper;
+        this.inflater = inflater;
+        this.container = container;
+        if (view == null) {
+            createView(null, null, false);
+        }
     }
 
-    public View changeView() {
+    public View getView() {
+        return view;
+    }
+
+
+    private View changeView() {
         String city = cityDropdown.getSelectedItem().toString();
 
         ArrayList<String> selection = new ArrayList<>();
@@ -86,32 +92,30 @@ public class HotelsViewBuilder implements View.OnClickListener {
             selectionArgs.add("5");
         }
         for (int i = 0; i < selectionArgs.size(); i++) {
-            selectionStars.add(HotelReaderContract.HotelEntry.RATING + "=?");
+            selectionStars.add(TravelCompanyContract.HotelEntry.RATING + "=?");
         }
         if (selectionStars.size() > 0) {
             selection.add("(" + String.join(" or ", selectionStars) + ")");
         }
 
         if (!("City".equals(city))) {
-            selection.add(HotelReaderContract.HotelEntry.CITY + "=?");
+            selection.add(TravelCompanyContract.HotelEntry.CITY + "=?");
             selectionArgs.add(city);
         }
 
-        view = createView(inflater, container, String.join(" and ", selection), selectionArgs.toArray(new String[0]), true);
+        view = createView(String.join(" and ", selection), selectionArgs.toArray(new String[0]), true);
         return view;
     }
 
-    public View createView(LayoutInflater inflater, ViewGroup container, String selection, String[] selectionArgs, Boolean update) {
+    private View createView(String selection, String[] selectionArgs, Boolean update) {
         if (!update) {
-            this.inflater = inflater;
-            this.container = container;
             view = inflater.inflate(R.layout.fragment_hotels, container, false);
             layout = (LinearLayout) view.findViewById(R.id.hotels_container);
         } else {
             layout.removeAllViewsInLayout();
         }
 
-        ArrayList<ArrayList<String>> data = hotelDBHelper.getRecords(selection, selectionArgs);
+        ArrayList<ArrayList<String>> data = travelCompanyDBHelper.getHotelRecords(selection, selectionArgs);
         for (ArrayList<String> row : data) {
             TableLayout tableLayout = createTableInfo(view, row);
 
@@ -127,8 +131,8 @@ public class HotelsViewBuilder implements View.OnClickListener {
             tableLayout.addView(bookHotelButton);
 
             View tableDivider = new View(view.getContext());
-            tableDivider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2));
-            tableDivider.setBackgroundColor(view.getResources().getColor(R.color.coral));
+            tableDivider.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 3));
+            tableDivider.setBackgroundColor(view.getResources().getColor(R.color.dark_blue));
 
             layout.addView(tableLayout);
             layout.addView(tableDivider);
@@ -183,7 +187,8 @@ public class HotelsViewBuilder implements View.OnClickListener {
         linkMapButton.setText("Open map");
         linkMapButton.setId(Integer.parseInt(row.get(0)) * 10000 + 4);
         linkMapButton.setPadding(0, 10, 0, 10);
-        linkMapButton.setBackgroundColor(view.getResources().getColor(R.color.mint));
+        linkMapButton.setBackgroundColor(view.getResources().getColor(R.color.dark_blue));
+        linkMapButton.setTextColor(view.getResources().getColor(R.color.white));
         linkMapButton.setOnClickListener(openMap(view, row.get(3)));
         cityRow.addView(cityView);
         cityRow.addView(linkMapButton);
@@ -301,7 +306,7 @@ public class HotelsViewBuilder implements View.OnClickListener {
                 this.view = changeView();
                 break;
             case R.id.hotel_clear_filters_button:
-                createView(inflater, container, null, null, true);
+                createView(null, null, true);
                 setupMenu();
                 departureDateEditText.setText("");
                 arrivalDateEditText.setText("");
@@ -326,15 +331,15 @@ public class HotelsViewBuilder implements View.OnClickListener {
                 String arrivalDate = arrivalDateEditText.getText().toString();
 
                 if ("".equals(departureDate)) {
-                    createAlert("Departure date is not set");
+                    createAlert("Empty field", "Departure date is not set");
                     return;
                 }
                 if ("".equals(arrivalDate)) {
-                    createAlert("Arrival date is not set");
+                    createAlert("Empty field", "Arrival date is not set");
                     return;
                 }
                 if ("0".equals(adultsNumberEditText.getText().toString())) {
-                    createAlert("Number of adults can not be 0");
+                    createAlert("Wrong data", "Number of adults can not be 0");
                     return;
                 }
 
@@ -351,26 +356,27 @@ public class HotelsViewBuilder implements View.OnClickListener {
                     numberOfKids = Integer.parseInt(kidsNumberEditText.getText().toString());
                 }
 
-                SQLiteDatabase database = accountHotelDBHelper.getWritableDatabase();
+                SQLiteDatabase database = travelCompanyDBHelper.getWritableDatabase();
                 ContentValues values = new ContentValues();
-                values.put(AccountHotelReaderContract.HotelEntry.DEPARTURE_DATE, departureDate);
-                values.put(AccountHotelReaderContract.HotelEntry.ARRIVAL_DATE, arrivalDate);
-                values.put(AccountHotelReaderContract.HotelEntry.HOTEL_ID, hotelId);
-                values.put(AccountHotelReaderContract.HotelEntry.ADULTS_NUMBER, numberOfAdults);
-                values.put(AccountHotelReaderContract.HotelEntry.KIDS_NUMBER, numberOfKids);
+                values.put(TravelCompanyContract.AccountHotelEntry.DEPARTURE_DATE, departureDate);
+                values.put(TravelCompanyContract.AccountHotelEntry.ARRIVAL_DATE, arrivalDate);
+                values.put(TravelCompanyContract.AccountHotelEntry.HOTEL_ID, hotelId);
+                values.put(TravelCompanyContract.AccountHotelEntry.ADULTS_NUMBER, numberOfAdults);
+                values.put(TravelCompanyContract.AccountHotelEntry.KIDS_NUMBER, numberOfKids);
 
                 long newRowId = database.insert(
-                        AccountHotelReaderContract.HotelEntry.TABLE_NAME,
+                        TravelCompanyContract.AccountHotelEntry.TABLE_NAME,
                         null,
                         values);
+                createAlert("Booking", "The hotel was successfully booked");
             }
         };
     }
 
-    private void createAlert(String message) {
+    private void createAlert(String title, String message) {
         AlertDialog.Builder alert = new AlertDialog.Builder(view.getContext());
 
-        alert.setTitle("Wrong data");
+        alert.setTitle(title);
         alert.setMessage(message);
 
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -378,7 +384,6 @@ public class HotelsViewBuilder implements View.OnClickListener {
 
             }
         });
-
         alert.show();
     }
 
